@@ -121,7 +121,7 @@ class SuperHexagonEnv(gym.Env):
         self.height = h
         self.depth = d
         print(w, h, d)
-        self.observation_space = gym.spaces.Box(low=0, high=255, shape=(h, w, d))
+        self.observation_space = gym.spaces.Box(low=0, high=255, shape=(h, w, d), dtype=np.uint8)
         self.actions = a
         self.shm = shared_memory.SharedMemory(create=True, size=w*h*d)
         self.sock.send(struct.pack("@i64s",
@@ -164,7 +164,7 @@ class SuperHexagonEnv(gym.Env):
         self.last_frame = np.flip(np.reshape(
             np.frombuffer(self.shm.buf, dtype=np.uint8),
             (self.height, self.width, self.depth)), axis=0
-        ).astype("uint8")
+        )
         return terminal != 0, reward, self.last_frame
     def _send_action(self, a):
         if a < 0 or a >= self.actions:

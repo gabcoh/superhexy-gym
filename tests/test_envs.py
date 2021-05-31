@@ -45,5 +45,9 @@ def test_random_rollout():
         if done: break
     env.close()
 
+def test_stable_baselines():
+    from stable_baselines3.common.env_checker import check_env
+    check_env(envs.make("superhexagon-v0", superhex_dir=basedir))
+
 if __name__ == "__main__":
     test_env()
