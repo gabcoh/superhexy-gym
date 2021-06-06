@@ -25,6 +25,7 @@ class SuperHexagonEnv(gym.Env):
         self.configdir = None
         self.sock = None
         self.sock_file = None
+        self.sock_fd = None
         self.server_sock = None
         self.proc = None
         self.width = None
@@ -100,10 +101,11 @@ class SuperHexagonEnv(gym.Env):
         shutil.rmtree(self.basedir)
 
     def _create_server_sock_file(self):
-        _, self.sock_file = mkstemp()
+        self.sock_fd, self.sock_file = mkstemp()
         os.unlink(self.sock_file)
     def _close_server_sock_file(self):
         os.unlink(self.sock_file)
+        os.close(self.sock_fd)
         return
 
     def _create_server_sock(self):
@@ -130,6 +132,7 @@ class SuperHexagonEnv(gym.Env):
                                    ))
     def _close_shm(self):
         self.shm.close()
+        self.shm.unlink()
 
     def _create_proc(self):
         if self.start_process:
