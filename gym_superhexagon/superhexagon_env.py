@@ -11,6 +11,7 @@ from contextlib import ExitStack
 from zipfile import ZipFile
 
 import gym
+from skimage.transform import resize
 
 import numpy as np
 
@@ -19,7 +20,9 @@ class SuperHexagonEnv(gym.Env):
 
     action_space = gym.spaces.Discrete(3)
 
-    def __init__(self, superhex_dir, videodriver="offscreen", start_process=True, superhex_log=False):
+    def __init__(self, superhex_dir=None, videodriver="offscreen", start_process=True, superhex_log=False, scale_factor=.16666666):
+        if superhex_dir is None and "SUPERHEXAGON_DIR" in os.environ:
+            superhex_dir = os.environ["SUPERHEXAGON_DIR"]
         self.superhex_dir = superhex_dir
         self.basedir = None
         self.configdir = None
@@ -29,7 +32,10 @@ class SuperHexagonEnv(gym.Env):
         self.server_sock = None
         self.proc = None
         self.width = None
+        self.scale_factor = scale_factor
+        self.raw_width = None
         self.height = None
+        self.raw_height = None
         self.depth = None
         self.actions = None
         self.shm = None
@@ -119,11 +125,12 @@ class SuperHexagonEnv(gym.Env):
     def _create_shm(self):
         init_form = "@iiii"
         w, h, d, a = struct.unpack(init_form, self.sock.recv(struct.calcsize(init_form)))
-        self.width = w
-        self.height = h
+        self.raw_width = w
+        self.raw_height = h
+        self.width = round(w * self.scale_factor)
+        self.height = round(h * self.scale_factor)
         self.depth = d
-        print(w, h, d)
-        self.observation_space = gym.spaces.Box(low=0, high=255, shape=(h, w, d), dtype=np.uint8)
+        self.observation_space = gym.spaces.Box(low=0, high=255, shape=(self.height, self.width, d), dtype=np.uint8)
         self.actions = a
         self.shm = shared_memory.SharedMemory(create=True, size=w*h*d)
         self.sock.send(struct.pack("@i64s",
@@ -166,8 +173,9 @@ class SuperHexagonEnv(gym.Env):
         terminal, reward = struct.unpack(form, data)
         self.last_frame = np.flip(np.reshape(
             np.frombuffer(self.shm.buf, dtype=np.uint8),
-            (self.height, self.width, self.depth)), axis=0
-        )
+            (self.raw_height, self.raw_width, self.depth)), axis=0
+                                          )
+        self.last_frame = resize(self.last_frame, (self.height, self.width), anti_aliasing=False, preserve_range=True).astype(np.uint8)
         return terminal != 0, reward, self.last_frame
     def _send_action(self, a):
         if a < 0 or a >= self.actions:
@@ -196,6 +204,6 @@ class SuperHexagonEnv(gym.Env):
         if mode == 'rgb_array':
             return self.last_frame # return RGB frame suitable for video
         else:
-            super(SuperHexagonEnv, self).render(mode=mode) # just raise an exception
+            raise NotImplementedError(f"Mode: {mode}")
     def close(self):
         self.stack.close()
