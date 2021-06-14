@@ -1,0 +1,4 @@
+[submodule "rl-baselines3-zoo"]
+	path = rl-baselines3-zoo
+	url = git@github.com:gabcoh/rl-baselines3-zoo.git
+	branch = superhexy-gym
