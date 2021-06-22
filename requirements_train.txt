@@ -1,0 +1,17 @@
+# from rl-baselines3-zoo
+git+https://github.com/DLR-RM/stable-baselines3#egg=stable-baselines3[extra,tests,docs]
+box2d-py==2.3.8
+pybullet
+gym-minigrid
+scikit-optimize
+optuna
+pytablewriter
+seaborn
+pyyaml>=5.1
+sb3-contrib>=1.1.0a7
+cloudpickle>=1.5.0
+# tmp fix: ROM missing in newest release
+atari-py==0.2.6
+
+moviepy
+gym_superhexagon
