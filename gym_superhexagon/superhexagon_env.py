@@ -21,8 +21,11 @@ class SuperHexagonEnv(gym.Env):
     action_space = gym.spaces.Discrete(3)
 
     def __init__(self, superhex_dir=None, videodriver="offscreen", start_process=True, superhex_log=False, scale_factor=.16666666):
-        if superhex_dir is None and "SUPERHEXAGON_DIR" in os.environ:
-            superhex_dir = os.environ["SUPERHEXAGON_DIR"]
+        if superhex_dir is None:
+            if "SUPERHEXAGON_DIR" in os.environ:
+                superhex_dir = os.environ["SUPERHEXAGON_DIR"]
+            else:
+                raise ValueError("Value needed for superhex_dir")
         self.superhex_dir = superhex_dir
         self.basedir = None
         self.configdir = None
