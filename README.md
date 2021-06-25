@@ -1,4 +1,5 @@
 # Super Hexagon Gym Environment
+**Disclaimer** In case anyone happens upon this repository note that everything works but I haven't gotten around to documenting it yet obviously. Been distracted by trying to get a decent agent trained, but documentation will come soon.
 
 ALSO MAKE SURE ALL USE OF Super Hexagon follows the correct two worsd convention
 *INSERT GIF OF IT WORKING HERE*
