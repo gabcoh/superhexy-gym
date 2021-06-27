@@ -23,14 +23,34 @@ environment keyword arguments accepted:
 | `superhex_log`  | When false pipe the Super Hexagon subprocess output to `/dev/null`. Defaults to `False`                                                                                                                                                                      |
 | `scale_factor`  | The Super Hexagon game will render at 768 by 480 by default. This determines the size of the observation made by the environment (useful to scale down when used as input to neural networks). Defaults to `.16666` making the observed resolution 128 by 80 |
 
-## Instalation
+## Installation
+
+### System Dependencies
+
+You need to have SDL (and development headers) and EGL libraries
+([see](https://askubuntu.com/questions/244133/how-do-i-get-egl-and-opengles-libraries-for-ubuntu-running-on-virtualbox))
+installed in order to build the native code. Additionally, using the gym
+requires bspatch to be installed.
+
+### Python Dependencies
+
+Run `pip install -r requirements_test.txt`
+
+### Building
+
+Running `make install` should attempt to build the native shim as well as the
+python library. The python library is installed by running `python setup.py
+install`
+
+Test that everything worked by running `pytest tests/`. This will run a few
+pretty basic tests on the environment.
 
 ## How
 
 ## TODO
 
 - [x] Document other environment keyword args
-- [ ] Document installation (don't forget to mention native dependencies like
+- [x] Document installation (don't forget to mention native dependencies like
       sdl and bspatch and ffmpeg for training)
 - [ ] Document training with baselines zoo and tensorboard
 - [ ] Document changes made in zoo fork
